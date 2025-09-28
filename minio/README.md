@@ -8,7 +8,8 @@ This directory contains Kubernetes manifests for deploying MinIO with persistent
 - `secret.yml` - Contains MinIO credentials (root user and password)
 - `pvc.yml` - Persistent volume claim for data storage
 - `deployment.yml` - MinIO deployment configuration
-- `service.yml` - Service to expose MinIO within the cluster
+- `service.yml` - Service to expose MinIO within the cluster (ClusterIP)
+- `service-nodeport.yml` - Service for external NodePort access
 - `ingress.yml` - Ingress for external internet access
 
 ## Deployment Instructions
@@ -47,6 +48,7 @@ kubectl apply -f secret.yml
 kubectl apply -f pvc.yml
 kubectl apply -f deployment.yml
 kubectl apply -f service.yml
+kubectl apply -f service-nodeport.yml  # Optional: For NodePort access
 kubectl apply -f ingress.yml
 ```
 
@@ -70,8 +72,14 @@ kubectl logs -l app=minio -n minio
 
 After successful deployment:
 
+### Ingress Access (Recommended for Production)
 - **MinIO Console**: http://minio.your-domain.com/console (or https if TLS is configured)
 - **MinIO API**: http://minio.your-domain.com/api (or https if TLS is configured)
+
+### NodePort Access (Development/Testing)
+- **MinIO Console**: http://any-node-ip:30091
+- **MinIO API**: http://any-node-ip:30090
+
 - **Default Credentials**: Use the values you set in `secret.yml`
 
 ## Configuration Notes
@@ -91,6 +99,21 @@ The following environment variables are configured in the secret:
 - API port: 9000
 - Console port: 9001
 - Service type: ClusterIP (internal cluster access)
+- NodePort API: 30090 (external access via NodePort service)
+- NodePort Console: 30091 (external access via NodePort service)
+
+### NodePort Access
+
+The NodePort service provides direct access to MinIO without requiring ingress configuration:
+
+- **Service**: `minio-service-nodeport`
+- **API Port**: 30090
+- **Console Port**: 30091
+- **API Access**: `http://any-node-ip:30090`
+- **Console Access**: `http://any-node-ip:30091`
+- **Use Case**: Development, testing, or when ingress is not available
+
+**Note**: The NodePort service is optional and can be deployed alongside the ingress for additional access flexibility.
 
 ### Security Considerations
 
@@ -140,6 +163,7 @@ To remove the deployment:
 
 ```bash
 kubectl delete -f ingress.yml
+kubectl delete -f service-nodeport.yml  # If NodePort was deployed
 kubectl delete -f service.yml
 kubectl delete -f deployment.yml
 kubectl delete -f pvc.yml  # This will delete persistent data

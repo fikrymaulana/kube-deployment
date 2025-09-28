@@ -59,7 +59,8 @@ An S3-compatible object storage solution for file and data storage.
 │   ├── secret.yml         # Database credentials
 │   ├── pvc.yml           # Persistent volume claim
 │   ├── deployment.yml     # PostGIS deployment
-│   ├── service.yml       # Internal service
+│   ├── service.yml       # Internal service (ClusterIP)
+│   ├── service-nodeport.yml  # External access service (NodePort)
 │   ├── ingress.yml       # Internet access configuration
 │   └── README.md         # Detailed documentation
 └── minio/                # MinIO deployment manifests
@@ -67,7 +68,8 @@ An S3-compatible object storage solution for file and data storage.
     ├── secret.yml        # MinIO credentials
     ├── pvc.yml          # Persistent volume claim
     ├── deployment.yml    # MinIO deployment
-    ├── service.yml      # Internal service
+    ├── service.yml      # Internal service (ClusterIP)
+    ├── service-nodeport.yml  # External access service (NodePort)
     ├── ingress.yml      # Internet access configuration
     └── README.md        # Detailed documentation
 ```
@@ -91,6 +93,7 @@ kubectl apply -f secret.yml
 kubectl apply -f pvc.yml
 kubectl apply -f deployment.yml
 kubectl apply -f service.yml
+kubectl apply -f service-nodeport.yml  # Optional: For NodePort access
 kubectl apply -f ingress.yml
 ```
 
@@ -104,6 +107,7 @@ kubectl apply -f secret.yml
 kubectl apply -f pvc.yml
 kubectl apply -f deployment.yml
 kubectl apply -f service.yml
+kubectl apply -f service-nodeport.yml  # Optional: For NodePort access
 kubectl apply -f ingress.yml
 ```
 
@@ -121,6 +125,24 @@ Update the `storageClassName` in the `pvc.yml` files to match your cluster's sto
 - Change default passwords in secret files
 - Configure TLS/SSL certificates for production use
 - Consider network policies for additional security
+
+## NodePort Access
+
+Both services include NodePort configurations for direct access to cluster nodes:
+
+### PostGIS NodePort
+- **Service**: `postgis-service-nodeport`
+- **Node Port**: 30432
+- **Access**: `http://any-node-ip:30432`
+
+### MinIO NodePort
+- **Service**: `minio-service-nodeport`
+- **API Port**: 30090
+- **Console Port**: 30091
+- **API Access**: `http://any-node-ip:30090`
+- **Console Access**: `http://any-node-ip:30091`
+
+**Note**: NodePort services are optional and provide direct access to services without requiring ingress configuration.
 
 ## Monitoring and Troubleshooting
 

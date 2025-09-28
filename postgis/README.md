@@ -8,7 +8,8 @@ This directory contains Kubernetes manifests for deploying PostGIS with persiste
 - `secret.yml` - Contains environment variables (database credentials)
 - `pvc.yml` - Persistent volume claim for data storage
 - `deployment.yml` - PostGIS deployment configuration
-- `service.yml` - Service to expose PostGIS within the cluster
+- `service.yml` - Service to expose PostGIS within the cluster (ClusterIP)
+- `service-nodeport.yml` - Service for external NodePort access
 - `ingress.yml` - Ingress for external internet access
 
 ## Deployment Instructions
@@ -47,6 +48,7 @@ kubectl apply -f secret.yml
 kubectl apply -f pvc.yml
 kubectl apply -f deployment.yml
 kubectl apply -f service.yml
+kubectl apply -f service-nodeport.yml  # Optional: For NodePort access
 kubectl apply -f ingress.yml
 ```
 
@@ -84,6 +86,18 @@ The following environment variables are configured in the secret:
 - Service port: 5432
 - Container port: 5432
 - Service type: ClusterIP (internal cluster access)
+- NodePort: 30432 (external access via NodePort service)
+
+### NodePort Access
+
+The NodePort service provides direct access to PostGIS without requiring ingress configuration:
+
+- **Service**: `postgis-service-nodeport`
+- **Node Port**: 30432
+- **Access**: `http://any-node-ip:30432`
+- **Use Case**: Development, testing, or when ingress is not available
+
+**Note**: The NodePort service is optional and can be deployed alongside the ingress for additional access flexibility.
 
 ### Security Considerations
 
