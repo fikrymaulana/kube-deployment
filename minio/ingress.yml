@@ -1,0 +1,46 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-ingress
+  namespace: minio
+  labels:
+    app: minio
+  annotations:
+    # Add these annotations based on your ingress controller
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"  # For SSL certificates
+spec:
+  # Uncomment and configure based on your ingress controller
+  # ingressClassName: nginx
+  rules:
+  - host: minio.your-domain.com  # Replace with your actual domain
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: minio-service
+            port:
+              number: 9000
+      - path: /console
+        pathType: Prefix
+        backend:
+          service:
+            name: minio-service
+            port:
+              number: 9001
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: minio-service
+            port:
+              number: 9001
+  # Uncomment for TLS/SSL
+  # tls:
+  # - hosts:
+  #   - minio.your-domain.com
+  #   secretName: minio-tls
