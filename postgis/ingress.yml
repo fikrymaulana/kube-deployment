@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: postgis-ingress
+  namespace: postgis
+  labels:
+    app: postgis
+  annotations:
+    # Add these annotations based on your ingress controller
+    # nginx.ingress.kubernetes.io/rewrite-target: /
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"  # For SSL certificates
+spec:
+  # Uncomment and configure based on your ingress controller
+  # ingressClassName: nginx
+  rules:
+  - host: postgis.your-domain.com  # Replace with your actual domain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: postgis-service
+            port:
+              number: 5432
+  # Uncomment for TLS/SSL
+  # tls:
+  # - hosts:
+  #   - postgis.your-domain.com
+  #   secretName: postgis-tls
