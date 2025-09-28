@@ -9,4 +9,4 @@ spec:
   resources:
     requests:
       storage: 50Gi
-  storageClassName: standard  # Change this to your preferred storage class
+  storageClassName: local-path  # Change this to your preferred storage class

@@ -1,4 +1,25 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgis-pv
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  local:
+    path: /mnt/data/postgis  # Create this directory on your node
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - racknerd-xx522b4  # Your node name
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgis-pvc
@@ -9,4 +30,4 @@ spec:
   resources:
     requests:
       storage: 20Gi
-  storageClassName: standard  # Change this to your preferred storage class
+  # Remove storageClassName to bind to manual PV
